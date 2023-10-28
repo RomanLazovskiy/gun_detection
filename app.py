@@ -22,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = YOLO("/Users/20674940/Downloads/best_last_v2.pt")
+model = YOLO("/Users/20674940/Downloads/best_last.pt")
 
 def send_notification(result_image_path, classes):
     # Открываем файл для чтения
