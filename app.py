@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, UploadFile
 from ultralytics import YOLO
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,7 +8,8 @@ from pathlib import Path
 import shutil
 import io
 import cv2
-import telebot
+from tg_bot.notification_bot import bot
+import json
 
 app = FastAPI()
 
@@ -20,7 +22,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = YOLO("/Users/20674940/Downloads/last.pt")
+model = YOLO("/Users/20674940/Downloads/best_last_v2.pt")
+
+def send_notification(result_image_path, classes):
+    # Открываем файл для чтения
+    with open('tg_bot/bot_state.json', 'r') as file:
+        all_chats = json.load(file)
+    for chat_id in all_chats.get('chat_ids', []):
+        bot.send_message(chat_id, f'На камере test обнаружено: {classes}')
+        bot.send_photo(chat_id, open(result_image_path, 'rb'))
 
 # Обработка загрузки изображения и обнаружение объектов
 @app.post("/detect")
@@ -44,16 +54,6 @@ async def detect_objects(file: UploadFile):
             # Обработайте изображение с использованием модели YOLO
             result_image = model(source=image, imgsz=640)
 
-            # if list(result_image[0].boxes.cls) != []:
-            #     tokin = '6269767469:AAHQBAndvR_9ix3u2biM-42EIYpguJ0Uy84'
-            #     bot = telebot.TeleBot(tokin)
-            #     classes = list(result_image[0].boxes.cls)
-            #     print(classes)
-            #     guns = {0:'Неопределенное оружие', 1:'Короткоствольное оружие', 2:"Длинноствольное оружие"}
-            #     classes = ', '.join([guns.get(int(x), '') for x in classes])
-            #     print(classes)
-            #     bot.send_message(294282068, f'На камере test обнаружено: {classes}')
-
             # Сохраните результат обработки
             result_image_path = f"runs/detect/predict/{file.filename}"
             for r in result_image:
@@ -61,7 +61,20 @@ async def detect_objects(file: UploadFile):
                 im = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
                 im.save(result_image_path)  # save image
 
+            if list(result_image[0].boxes.cls) != []:
+                classes = list(result_image[0].boxes.cls)
+                print(classes)
+                guns = {0:'Неопределенное оружие', 1:'Короткоствольное оружие', 2:"Длинноствольное оружие"}
+                classes = ', '.join([guns.get(int(x), '') for x in classes])
+                print(classes)
+                try:
+                    send_notification(result_image_path, classes)
+                except:
+                    pass
+                finally: return FileResponse(result_image_path, headers={"Content-Type": "image/jpeg"})
+
             return FileResponse(result_image_path, headers={"Content-Type": "image/jpeg"})
+
         elif file.content_type.startswith("video"):
             # Если загружено видео, вернем его как исходное
             cap = cv2.VideoCapture(temp_file_path)
