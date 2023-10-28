@@ -13,6 +13,10 @@ import json
 
 app = FastAPI()
 
+
+model_image = YOLO("/Users/20674940/Downloads/last.pt")
+model_video = YOLO("/Users/20674940/Downloads/best_last_v2.pt")
+
 # Добавление заголовков CORS для разрешения запросов с вашего домена
 app.add_middleware(
     CORSMiddleware,
@@ -22,7 +26,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = YOLO("/Users/20674940/Downloads/best_last.pt")
 
 def send_notification(result_image_path, classes):
     # Открываем файл для чтения
@@ -52,7 +55,7 @@ async def detect_objects(file: UploadFile):
             print(image)
 
             # Обработайте изображение с использованием модели YOLO
-            result_image = model(source=image, imgsz=640)
+            result_image = model_image(source=image, imgsz=640)
 
             # Сохраните результат обработки
             result_image_path = f"runs/detect/predict/{file.filename}"
@@ -94,7 +97,7 @@ async def detect_objects(file: UploadFile):
 
                 if success:
                     # Выполните инференс YOLO на каждом кадре
-                    results = model(frame)
+                    results = model_video(frame)
 
                     # Получите аннотированный кадр
                     annotated_frame = results[0].plot()
