@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 import io
 import cv2
+import telebot
 
 app = FastAPI()
 
@@ -19,7 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = YOLO("/Users/20674940/Downloads/best.pt")
+model = YOLO("/Users/20674940/Downloads/last.pt")
 
 # Обработка загрузки изображения и обнаружение объектов
 @app.post("/detect")
@@ -42,6 +43,16 @@ async def detect_objects(file: UploadFile):
 
             # Обработайте изображение с использованием модели YOLO
             result_image = model(source=image, imgsz=640)
+
+            # if list(result_image[0].boxes.cls) != []:
+            #     tokin = '6269767469:AAHQBAndvR_9ix3u2biM-42EIYpguJ0Uy84'
+            #     bot = telebot.TeleBot(tokin)
+            #     classes = list(result_image[0].boxes.cls)
+            #     print(classes)
+            #     guns = {0:'Неопределенное оружие', 1:'Короткоствольное оружие', 2:"Длинноствольное оружие"}
+            #     classes = ', '.join([guns.get(int(x), '') for x in classes])
+            #     print(classes)
+            #     bot.send_message(294282068, f'На камере test обнаружено: {classes}')
 
             # Сохраните результат обработки
             result_image_path = f"runs/detect/predict/{file.filename}"
