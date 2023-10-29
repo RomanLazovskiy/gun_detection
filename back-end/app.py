@@ -29,7 +29,7 @@ app.add_middleware(
 
 def send_notification(result_image_path, classes):
     # Открываем файл для чтения
-    with open('tg_bot/bot_state.json', 'r') as file:
+    with open('./tg_bot/bot_state.json', 'r') as file:
         all_chats = json.load(file)
     for chat_id in all_chats.get('chat_ids', []):
         bot.send_message(chat_id, f'На камере test обнаружено: {classes}')
@@ -44,7 +44,7 @@ async def detect_objects(file: UploadFile):
         print(f"File content type: {file.content_type}")
 
         # Сохраните загруженное изображение или видео во временный файл
-        temp_file_path = f"temp/{file.filename}"
+        temp_file_path = f"./temp/{file.filename}"
         with open(temp_file_path, "wb") as temp_file:
             shutil.copyfileobj(file.file, temp_file)
         print(temp_file_path)
@@ -58,7 +58,7 @@ async def detect_objects(file: UploadFile):
             result_image = model_image(source=image, imgsz=640)
 
             # Сохраните результат обработки
-            result_image_path = f"runs/detect/predict/{file.filename}"
+            result_image_path = f"./runs/detect/predict/{file.filename}"
             for r in result_image:
                 im_array = r.plot()  # plot a BGR numpy array of predictions
                 im = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
@@ -88,7 +88,7 @@ async def detect_objects(file: UploadFile):
             fps = int(cap.get(5))
 
             # Создайте объект VideoWriter для записи аннотированного видео
-            output_path = f"runs/detect/predict/{file.filename}"
+            output_path = f"./runs/detect/predict/{file.filename}"
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
             out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, frame_height))
 
@@ -124,6 +124,6 @@ async def detect_objects(file: UploadFile):
 
 if __name__ == "__main__":
     import uvicorn
-    Path("temp/").mkdir(parents=True, exist_ok=True)
-    Path("runs/detect/predict").mkdir(parents=True, exist_ok=True)
+    Path("./temp/").mkdir(parents=True, exist_ok=True)
+    Path("./runs/detect/predict").mkdir(parents=True, exist_ok=True)
     uvicorn.run(app, host="0.0.0.0", port=8000)

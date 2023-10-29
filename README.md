@@ -10,8 +10,6 @@
 - Docker: платформа для простого создания, доставки и запуска распределенных приложений.
 - Telegram API: API  для 
 
-<img width="100%" src="https://raw.githubusercontent.com/ultralytics/assets/main/yolov8/yolo-comparison-plots.png"></a>
-
 ---
 # Инструкция по установке
 
