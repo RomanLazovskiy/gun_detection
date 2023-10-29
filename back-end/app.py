@@ -5,7 +5,6 @@ from fastapi.responses import FileResponse, StreamingResponse
 from PIL import Image
 from pathlib import Path
 import shutil
-import io
 import cv2
 from tg_bot.notification_bot import bot
 import json
@@ -15,8 +14,8 @@ app = FastAPI()
 
 print(os.getcwd())
 
-model_image = YOLO("models/model_image.pt")
-model_video = YOLO("models/model_video.pt")
+model_image = YOLO("/models/model_image.pt")
+model_video = YOLO("/models/model_video.pt")
 
 # Добавление заголовков CORS для разрешения запросов с вашего домена
 app.add_middleware(

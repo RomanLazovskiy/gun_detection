@@ -2,14 +2,14 @@
 FROM python:3.10
 
 # Устанавливаем рабочую директорию внутри контейнера
-WORKDIR /app
+WORKDIR /back-end
 
 # Копируем файл зависимостей и файл с зависимостями
 COPY requirements.txt .
 
 # Копируем файлы модели из локальной директории в контейнер
-COPY models/model_image.pt /app/models/model_image.pt
-COPY models/model_video.pt /app/models/model_video.pt
+COPY models/model_image.pt /models/model_image.pt
+COPY models/model_video.pt /models/model_video.pt
 
 # Update pip
 RUN python -m pip install --upgrade pip
@@ -21,7 +21,7 @@ RUN pip install -r requirements.txt
 RUN apt-get update && apt-get install -y libgl1-mesa-glx
 
 # Копируем все файлы из текущей директории (включая приложение) в контейнер
-COPY . /app
+COPY . /back-end
 
 # По умолчанию FastAPI использует порт 8000, поэтому мы должны его открыть
 EXPOSE 8000
