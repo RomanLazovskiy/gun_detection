@@ -9,6 +9,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 back-end/models/
+front-end/gun-detection-app/node_modules
 build/
 develop-eggs/
 dist/
