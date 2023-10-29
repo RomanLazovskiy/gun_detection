@@ -1,0 +1,16 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: ./back-end  # Путь к папке с Dockerfile для back-end
+    ports:
+      - "8000:8000"  # Маппинг порта контейнера на порт хоста
+
+  frontend:
+    build:
+      context: ./front-end/gun-detection-app  # Путь к папке с Dockerfile для front-end
+    ports:
+      - "3000:3000"  # Маппинг порта контейнера на порт хоста
+    depends_on:
+      - backend  # Гарантирует, что back-end запустится перед front-end
+

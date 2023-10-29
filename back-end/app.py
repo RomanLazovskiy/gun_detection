@@ -1,4 +1,3 @@
-import os
 from fastapi import FastAPI, UploadFile
 from ultralytics import YOLO
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,12 +9,14 @@ import io
 import cv2
 from tg_bot.notification_bot import bot
 import json
+import os
 
 app = FastAPI()
 
+print(os.getcwd())
 
-model_image = YOLO("/Users/20674940/Downloads/last.pt")
-model_video = YOLO("/Users/20674940/Downloads/best_last_v2.pt")
+model_image = YOLO("models/model_image.pt")
+model_video = YOLO("models/model_video.pt")
 
 # Добавление заголовков CORS для разрешения запросов с вашего домена
 app.add_middleware(
@@ -124,6 +125,6 @@ async def detect_objects(file: UploadFile):
 
 if __name__ == "__main__":
     import uvicorn
-    Path("temp").mkdir(parents=True, exist_ok=True)
+    Path("temp/").mkdir(parents=True, exist_ok=True)
     Path("runs/detect/predict").mkdir(parents=True, exist_ok=True)
     uvicorn.run(app, host="0.0.0.0", port=8000)
